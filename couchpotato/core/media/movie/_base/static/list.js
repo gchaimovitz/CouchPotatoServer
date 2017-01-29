@@ -244,6 +244,16 @@ var MovieList = new Class({
 						}
 					})
 				),
+				new Element('div.category').adopt(
+					new Element('span[text=or]'),
+					self.mass_edit_category = new Element('select'),
+					new Element('a.button.orange', {
+						'text': 'Change category',
+						'events': {
+							'click': self.changeCategorySelected.bind(self)
+						}
+					})
+				),
 				new Element('div.delete').adopt(
 					new Element('span[text=or]'),
 					new Element('a.button.red', {
@@ -299,6 +309,17 @@ var MovieList = new Class({
 				'value': profile.get('_id'),
 				'text': profile.get('label')
 			}).inject(self.mass_edit_quality);
+		});
+
+		new Element('option', {
+				'text': 'No category'
+		}).inject(self.mass_edit_category);
+		CategoryList.getAll().each(function(cat){
+			console.log(cat);
+			new Element('option', {
+				'value': cat.get('_id'),
+				'text': cat.get('label')
+			}).inject(self.mass_edit_category);
 		});
 
 		self.filter_menu.addLink(
@@ -457,6 +478,21 @@ var MovieList = new Class({
 			'data': {
 				'id': ids.join(','),
 				'profile_id': self.mass_edit_quality.get('value')
+			},
+			'onSuccess': self.search.bind(self)
+		});
+	},
+
+
+	changeCategorySelected: function() {
+		var self = this;
+		var ids = self.getSelectedMovies();
+
+		Api.request('movie.edit', {
+			'method': 'post',
+			'data': {
+				'id': ids.join(','),
+				'category_id': self.mass_edit_category.get('value')
 			},
 			'onSuccess': self.search.bind(self)
 		});
