@@ -25,7 +25,7 @@ class Base(TorrentMagnetProvider):
             movie_count = tryInt(data['data']['movie_count'])
 
             if movie_count == 0:
-                log.error('%s returned an error (search or tryInt() failed): %s', (self.getName(), data['error']))
+                log.debug('%s - found no results', (self.getName()))
             else:
 
                 movie_results = data['data']['movies']
@@ -35,7 +35,7 @@ class Base(TorrentMagnetProvider):
 
                     t = movie['info']['original_title'].split(' ')
 
-                    if all(word in name for word in t):
+                    if all(word in name for word in t) and movie['info']['year'] == result['year']:
 
                         year = result['year']
                         detail_url = result['url']
